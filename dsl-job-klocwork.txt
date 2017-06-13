@@ -1,0 +1,88 @@
+job("DSL-Test") {
+  wrappers{
+    klocworkWrapper {
+		serverConfig("VirtualBox-Klocwork")
+		installConfig("Klocwork")
+		serverProject("helloworld-c")
+		ltoken("")
+	}
+  }
+  scm{
+    github("andreaslarfors/helloworld-c")
+  }
+  steps{
+    batchFile("kwinject make")
+    klocworkDesktopBuilder {
+		desktopConfig {
+          buildSpec("kwinject.out")
+          projectDir("")
+          cleanupProject(true)
+          reportFile("")
+          additionalOpts("")
+          incrementalAnalysis(true)
+          diffAnalysisConfig {
+              diffType("manual")
+              gitPreviousCommit("")
+              diffFileList("diff_file_list_hello.txt")
+          }
+		}
+	}
+    
+    klocworkXSyncBuilder {
+      syncConfig {
+          dryRun(false)
+          lastSync("03-00-0000 00:00:00")
+          projectRegexp("")
+          statusAnalyze(true)
+          statusIgnore(true)
+          statusNotAProblem(true)
+          statusFix(true)
+          statusFixInNextRelease(true)
+          statusFixInLaterRelease(true)
+          statusDefer(true)
+          statusFilter(true)
+          additionalOpts("")
+      }
+	}
+    
+    klocworkServerAnalysisBuilder {
+      serverConfig {
+        buildSpec("kwinject.out")
+        tablesDir("")
+        incrementalAnalysis(false)
+        ignoreCompileErrors(false)
+        importConfig("analysis_profile.pconf")
+        additionalOpts("")
+      }
+	}
+    
+	klocworkServerLoadBuilder {
+      serverConfig {
+        tablesDir("")
+        buildName("")
+        additionalOpts("")
+      }
+    }
+  }
+  
+  publishers{
+    klocworkGatewayPublisher {
+    gatewayConfig {
+        enableServerGateway(true)
+        gatewayServerConfigs {
+            klocworkGatewayServerConfig {
+                jobResult("failed")
+                query("Status:New")
+                threshold("1")
+                conditionName("First condition")
+            }
+        }
+        enableDesktopGateway(true)
+        gatewayDesktopConfig {
+            threshold("1")
+            reportFile("")
+        }
+    }
+}
+  }
+}
