@@ -10,7 +10,7 @@ int main(void)
 }
    if (a=b){
 }
-   int* = NULL;
+   int* i = NULL;
    *i = 5;
 
    return 0;
